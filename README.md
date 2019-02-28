@@ -8,3 +8,5 @@ This `dockerfile` is a definition for a docker image including the following:
 * Azure Functions Core Tools
 * OpenJDK 8
 * Gradle, Maven and Spring Boot
+* NodeJS 8
+
