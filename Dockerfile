@@ -1,5 +1,8 @@
 FROM ubuntu:18.04
 
+# User Name
+ARG USERNAME=yoichiro6642
+
 # Install Dependencies
 RUN apt-get update && \
     apt-get install -y build-essential wget curl zip apt-transport-https lsb-release software-properties-common && \
@@ -18,9 +21,40 @@ RUN apt-get update && \
     chown root:root /etc/apt/sources.list.d/microsoft-prod.list && \
     apt-get update && \
     apt-get install -y aspnetcore-runtime-2.2 && \
-# Azure Function Core Tools
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg && \
     mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg && \
     sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list' && \
     apt-get update && \
-    apt-get install -y azure-functions-core-tools
+    apt-get install -y azure-functions-core-tools && \
+# .Net Core SDK
+    wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \
+    add-apt-repository universe && \
+    apt-get update && \
+    apt-get install -y dotnet-sdk-2.2 && \
+    rm -f packages-microsoft-prod.deb && \
+# Azure Functions Core Tools
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg && \
+    mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg && \
+    sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list' && \
+    apt-get update && \
+    apt-get install -y azure-functions-core-tools && \
+# JDK 8
+    apt-get install -y openjdk-8-jdk
+
+# Add a new user
+RUN groupadd --gid 1000 $USERNAME && useradd -u 1000 -g 1000 -s /bin/bash -d /home/$USERNAME -m $USERNAME
+USER $USERNAME
+
+WORKDIR /home/$USERNAME
+
+# SDKMAN, gradle, maven, Spring Boot
+RUN curl -s "https://get.sdkman.io" | bash && \
+    /bin/bash -l -c 'source "$HOME/.sdkman/bin/sdkman-init.sh"; sdk install gradle 5.1.1; sdk install maven 3.6.0; sdk install springboot 2.1.1.RELEASE'
+
+# Prepare working directory
+WORKDIR /home/$USERNAME/project
+
+VOLUME /home/$USERNAME/project
+
+CMD ["/bin/bash"]
