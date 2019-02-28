@@ -52,6 +52,12 @@ WORKDIR /home/$USERNAME
 RUN curl -s "https://get.sdkman.io" | bash && \
     /bin/bash -l -c 'source "$HOME/.sdkman/bin/sdkman-init.sh"; sdk install gradle 5.1.1; sdk install maven 3.6.0; sdk install springboot 2.1.1.RELEASE'
 
+# Install nodebrew and NodeJS 8
+RUN curl -L git.io/nodebrew | perl - setup && \
+    /home/$USERNAME/.nodebrew/current/bin/nodebrew install-binary v8.15.0 && \
+    /home/$USERNAME/.nodebrew/current/bin/nodebrew use v8.15.0 && \
+    /bin/bash -l -c 'echo "export PATH=$HOME/.nodebrew/current/bin:$PATH" >> $HOME/.bashrc'
+
 # Prepare working directory
 WORKDIR /home/$USERNAME/project
 
