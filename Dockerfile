@@ -56,7 +56,7 @@ RUN curl -s "https://get.sdkman.io" | bash && \
 RUN curl -L git.io/nodebrew | perl - setup && \
     /home/$USERNAME/.nodebrew/current/bin/nodebrew install-binary v8.15.0 && \
     /home/$USERNAME/.nodebrew/current/bin/nodebrew use v8.15.0 && \
-    /bin/bash -l -c 'echo "export PATH=$HOME/.nodebrew/current/bin:$PATH" >> $HOME/.bashrc'
+    /bin/bash -l -c 'echo "export PATH=\$HOME/.nodebrew/current/bin:\$PATH" >> $HOME/.bashrc'
 
 # Prepare working directory
 WORKDIR /home/$USERNAME/project
